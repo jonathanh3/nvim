@@ -147,7 +147,9 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function(event)
     local yamlls_clients = vim.lsp.get_clients({ bufnr = event.buf, name = "yamlls" })
     for _, client in ipairs(yamlls_clients) do
-      vim.lsp.stop_client(client)
+      -- Detach from this buffer only; stopping the client would kill yamlls
+      -- for every other YAML file in the session.
+      vim.lsp.buf_detach_client(event.buf, client.id)
     end
   end,
 })
