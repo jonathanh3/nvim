@@ -31,13 +31,24 @@ return {
         end, desc = "Live Grep in Current Dir" },
       { "<leader>sG", function()
           require("telescope.builtin").live_grep({
-            prompt_title = "Live Grep (Respect Gitignore)",
+            prompt_title = "Live Grep (Including Ignored)",
             vimgrep_arguments = {
-              "rg", "--color=never", "--no-heading", "--with-filename",
-              "--line-number", "--column", "--smart-case",
+              "rg",
+              "--color=never",
+              "--no-heading",
+              "--with-filename",
+              "--line-number",
+              "--column",
+              "--smart-case",
+              "--hidden",
+              "--no-ignore-vcs",
+              "--glob", "!.git/",
+              "--glob", "!node_modules/",
+              "--glob", "!venv/",
+              "--glob", "!.venv/",
             },
           })
-        end, desc = "Live Grep (Respect Gitignore)" },
+        end, desc = "Live Grep (Including Ignored)" },
 
       -- etc.
       { "<leader>fr", "<cmd>Telescope resume<cr>", desc = "Telescope Resume Last Picker" },
@@ -49,21 +60,6 @@ return {
         defaults = {
           layout_config = {
             prompt_position = "top",
-          },
-          vimgrep_arguments = {
-            "rg",
-            "--color=never",
-            "--no-heading",
-            "--with-filename",
-            "--line-number",
-            "--column",
-            "--smart-case",
-            "--hidden",
-            "--no-ignore-vcs",
-            "--glob", "!.git/",
-            "--glob", "!node_modules/",
-            "--glob", "!venv/",
-            "--glob", "!.venv/",
           },
         },
         pickers = {

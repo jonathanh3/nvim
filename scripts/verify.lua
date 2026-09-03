@@ -86,6 +86,24 @@ if vim.g.colors_name ~= "vscode" then
   fail("expected colorscheme vscode, got " .. tostring(vim.g.colors_name))
 end
 
+local grep_args = require("telescope.config").values.vimgrep_arguments
+for _, arg in ipairs(grep_args) do
+  if arg == "--no-ignore-vcs" then
+    fail("live_grep default still uses --no-ignore-vcs")
+  end
+end
+if not vim.tbl_contains(grep_args, "--smart-case") then
+  fail("live_grep default missing --smart-case")
+end
+if require("telescope").extensions.fzf == nil then
+  fail("telescope fzf extension not loaded")
+end
+
+local mason_settings = require("mason-lspconfig.settings")
+if mason_settings.current.automatic_enable ~= false then
+  fail("mason-lspconfig automatic_enable should be false, got " .. vim.inspect(mason_settings.current.automatic_enable))
+end
+
 -- Opening a real file fires BufRead hooks (gitsigns, treesitter, ibl, ufo, lsp).
 vim.cmd.edit("init.lua")
 vim.wait(200)
