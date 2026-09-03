@@ -64,7 +64,18 @@ for _, mod in ipairs(modules) do
   end
 end
 
-local commands = { "Scm", "ScmDiff", "ScmLog", "Telescope", "Mason", "Lazy" }
+local commands = {
+  "Scm",
+  "ScmDiff",
+  "ScmLog",
+  "Telescope",
+  "Mason",
+  "Lazy",
+  "BufferNext",
+  "BufferPrevious",
+  "BufferClose",
+  "BufferCloseAllButCurrent",
+}
 for _, cmd in ipairs(commands) do
   if vim.fn.exists(":" .. cmd) ~= 2 then
     fail("missing user command :" .. cmd)
