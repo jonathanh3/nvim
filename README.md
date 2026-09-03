@@ -58,7 +58,7 @@ lua/
 │   └── autocmds.lua
 └── plugins/         # Plugin specs & configs
     ├── colorscheme.lua
-    ├── lsp/         # LSP & completion setup
+    ├── lsp.lua      # LSP, Mason, and completion
     ├── telescope.lua
     └── ...
 ```

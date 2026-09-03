@@ -1,9 +1,13 @@
 -- Match files like `*.js.ejs`, `*.ts.ejs`, `*.json.ejs`, etc.
 -- and treat them as if they were the base filetype (`js`, `ts`, `json`, etc.)
+-- Neovim 0.12 wraps user patterns as ^pat$; do not add your own $ anchors.
 vim.filetype.add({
+  filename = {
+    [".gitlab-ci.yml"] = "yaml.gitlab",
+    [".gitlab-ci.yaml"] = "yaml.gitlab",
+  },
   pattern = {
-    ["%.ejs$"] = function(path)
-      local base_ext = path:match("(%a+)%.ejs$")
+    [".*%.(%a+)%.ejs"] = function(_, _, ext)
       local map = {
         js = "javascript",
         yml = "yaml",
@@ -13,9 +17,25 @@ vim.filetype.add({
         css = "css",
         html = "html",
       }
-      return map[base_ext]
+      return map[ext]
     end,
+    [".*%.gitlab%-ci%.ya?ml"] = "yaml.gitlab",
+    [".*/%.gitlab/.*%.ya?ml"] = "yaml.gitlab",
   },
+})
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  desc = "Detect Ansible YAML files",
+  group = vim.api.nvim_create_augroup("ansible-filetype", { clear = true }),
+  pattern = { "*.yml", "*.yaml" },
+  callback = function(event)
+    local fname = vim.api.nvim_buf_get_name(event.buf)
+    local is_ansible = fname:match("ansible/") or fname:match("playbooks/") or
+                       fname:match("roles/") or fname:match("group_vars/")
+    if is_ansible then
+      vim.bo[event.buf].filetype = "yaml.ansible"
+    end
+  end,
 })
 
 vim.api.nvim_create_autocmd("TextYankPost", {

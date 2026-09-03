@@ -90,6 +90,41 @@ end
 vim.cmd.edit("init.lua")
 vim.wait(200)
 
+-- LSP setup now lives in lua/plugins/lsp.lua; these modules must be gone.
+for _, mod in ipairs({ "config.lsp.mason", "config.lsp.completion" }) do
+  if pcall(require, mod) then
+    fail("stale module still present: " .. mod)
+  end
+end
+
+local enabled_servers = { "pyright", "yamlls", "ansiblels", "gitlab_ci_ls", "jsonls", "ts_ls" }
+for _, server in ipairs(enabled_servers) do
+  if not vim.lsp.is_enabled(server) then
+    fail("lsp server not enabled: " .. server)
+  end
+end
+
+if vim.filetype.match({ filename = "foo.gitlab-ci.yml" }) ~= "yaml.gitlab" then
+  fail("expected gitlab-ci.yml filetype yaml.gitlab")
+end
+if vim.filetype.match({ filename = "/tmp/.gitlab/ci.yml" }) ~= "yaml.gitlab" then
+  fail("expected .gitlab/*.yml filetype yaml.gitlab")
+end
+if vim.filetype.match({ filename = "app.js.ejs" }) ~= "javascript" then
+  fail("expected app.js.ejs filetype javascript")
+end
+
+local ansible_dir = vim.fn.tempname() .. "/playbooks"
+vim.fn.mkdir(ansible_dir, "p")
+local ansible_file = ansible_dir .. "/site.yml"
+vim.fn.writefile({ "---" }, ansible_file)
+vim.cmd.edit(ansible_file)
+if vim.bo.filetype ~= "yaml.ansible" then
+  fail("expected playbooks/*.yml filetype yaml.ansible, got " .. tostring(vim.bo.filetype))
+end
+vim.cmd.bdelete({ bang = true })
+vim.fn.delete(ansible_dir, "rf")
+
 if #failures > 0 then
   io.stderr:write("verify failed:\n")
   for _, msg in ipairs(failures) do
