@@ -64,8 +64,11 @@ local servers = {
 }
 
 -- GitHub Actions verifies the Lua config, not that Mason can fetch servers.
+-- automatic_enable defaults to true and would vim.lsp.enable() every Mason
+-- server (plus our explicit vim.lsp.enable(servers) below).
 mason_lspconfig.setup({
   ensure_installed = vim.env.GITHUB_ACTIONS and {} or servers,
+  automatic_enable = false,
 })
 
 -- Defaults applied to every LSP server
