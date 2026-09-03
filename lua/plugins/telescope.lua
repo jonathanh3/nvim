@@ -8,9 +8,6 @@ return {
         "nvim-telescope/telescope-fzf-native.nvim",
         build = "make",
         cond = vim.fn.executable("make") == 1,
-        config = function()
-          require("telescope").load_extension("fzf")
-        end,
       },
     },
     cmd = "Telescope",
@@ -93,6 +90,9 @@ return {
           },
         },
       })
+      -- load_extension must run after setup(); the fzf-native dependency
+      -- would otherwise load first and miss the extensions.fzf settings.
+      pcall(require("telescope").load_extension, "fzf")
     end,
   },
 }
